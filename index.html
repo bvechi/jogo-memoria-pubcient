@@ -119,12 +119,12 @@
 <body>
 
 <!-- TELAS -->
-<div id="tela1" class="relative w-full h-screen escala-ajustavel">
+<div id="tela1" class="relative w-full h-screen">
   <img src="telas/tela-inicial-1.svg" alt="Tela inicial 1" class="full-screen-img" />
   <img src="botoes/button-continuar.svg" alt="Botão continuar" class="overlay-button btn-continuar" onclick="irParaTela2()" />
 </div>
 
-<div id="tela2" class="relative w-full h-screen escala-ajustavel hidden">
+<div id="tela2" class="relative w-full h-screen hidden">
   <img src="telas/tela-inicial-2.svg" alt="Tela inicial 2" class="full-screen-img" />
   <img src="botoes/button-começar.svg" alt="Botão começar" class="overlay-button btn-comecar" onclick="iniciarJogo()" />
 </div>
@@ -231,20 +231,6 @@
   }
 
   document.getElementById('restart-btn').addEventListener('click', initGame);
-
-  // ESCALA AUTOMÁTICA
-  function ajustarEscala() {
-    const larguraPadrao = 1440;
-    const larguraAtual = window.innerWidth;
-    const proporcao = larguraAtual / larguraPadrao;
-
-    document.querySelectorAll('.escala-ajustavel').forEach(el => {
-      el.style.transform = `scale(${proporcao})`;
-    });
-  }
-
-  window.addEventListener('load', ajustarEscala);
-  window.addEventListener('resize', ajustarEscala);
 </script>
 </body>
 </html>
