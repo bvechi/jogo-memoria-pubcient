@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Jogo da Memória: Publicação Contínua</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <style>
     html, body {
       margin: 0;
@@ -117,7 +118,6 @@
   </style>
 </head>
 <body>
-
 <!-- TELAS -->
 <div id="tela1" class="relative w-full h-screen">
   <img src="telas/tela-inicial-1.svg" alt="Tela inicial 1" class="full-screen-img" />
@@ -130,7 +130,7 @@
 </div>
 
 <!-- JOGO -->
-<div id="jogo" class="hidden p-4 escala-ajustavel" style="height: 100dvh; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between;">
+<div id="jogo" class="hidden p-4 escala-ajustavel" style="height: 100dvh; overflow: hidden; flex-direction: column; justify-content: space-between;">
   <div class="max-w-6xl mx-auto">
     <header class="text-center mb-8">
       <h1 class="text-4xl font-bold text-blue-800">Jogo da Memória: Publicação Contínua</h1>
@@ -145,93 +145,106 @@
 </div>
 
 <script>
-  function irParaTela2() {
-    document.getElementById('tela1').classList.add('hidden');
-    document.getElementById('tela2').classList.remove('hidden');
-    document.getElementById('jogo').classList.add('hidden');
-  }
+function irParaTela2() {
+  document.getElementById('tela1').classList.add('hidden');
+  document.getElementById('tela2').classList.remove('hidden');
+}
 
-  function iniciarJogo() {
-    document.getElementById('tela2').classList.add('hidden');
-    document.getElementById('jogo').classList.remove('hidden');
-    initGame();
-  }
+function iniciarJogo() {
+  document.getElementById('tela2').classList.add('hidden');
+  document.getElementById('jogo').style.display = 'flex';
+  initGame();
+}
 
-  const cardPairs = [
-    { concept: "Publicação Contínua", definition: "Artigos publicados individualmente ao longo do ano." },
-    { concept: "Volume único", definition: "Todos os artigos do ano são reunidos em um só volume." },
-    { concept: "Fascículo", definition: "Estrutura não utilizada em revistas que adotam publicação contínua." },
-    { concept: "Elocation-id", definition: "Código que substitui a paginação tradicional." },
-    { concept: "Data individual", definition: "Cada artigo tem sua própria data de publicação visível." },
-    { concept: "Modelo híbrido", definition: "Mistura fluxo contínuo com fascículos. Pode causar confusão e deve ser evitado." },
-    { concept: "DOI", definition: "Identificador digital único para artigos científicos." },
-    { concept: "OJS", definition: "Sistema aberto de gestão e publicação de periódicos científicos." },
-    { concept: "Indexação", definition: "Inclusão em bases como DOAJ e Crossref." },
-    { concept: "Fluxo editorial", definition: "Caminho do artigo desde a submissão até a publicação final." }
-  ];
+function dispararConfetes() {
+  confetti({
+    particleCount: 150,
+    spread: 70,
+    origin: { y: 0.6 }
+  });
+}
 
-  let cards = [], flipped = [], locked = false;
-  const board = () => document.getElementById('game-board');
+const cardPairs = [
+  { concept: "Publicação Contínua", definition: "Artigos publicados individualmente ao longo do ano." },
+  { concept: "Volume único", definition: "Todos os artigos do ano são reunidos em um só volume." },
+  { concept: "Fascículo", definition: "Estrutura não utilizada em revistas que adotam publicação contínua." },
+  { concept: "Elocation-id", definition: "Código que substitui a paginação tradicional." },
+  { concept: "Data individual", definition: "Cada artigo tem sua própria data de publicação visível." },
+  { concept: "Modelo híbrido", definition: "Mistura fluxo contínuo com fascículos. Pode causar confusão e deve ser evitado." },
+  { concept: "DOI", definition: "Identificador digital único para artigos científicos." },
+  { concept: "OJS", definition: "Sistema aberto de gestão e publicação de periódicos científicos." },
+  { concept: "Indexação", definition: "Inclusão em bases como DOAJ e Crossref." },
+  { concept: "Fluxo editorial", definition: "Caminho do artigo desde a submissão até a publicação final." }
+];
 
-  function initGame() {
-    cards = [];
-    flipped = [];
-    locked = false;
-    board().innerHTML = "";
+let cards = [], flipped = [], locked = false;
+const board = () => document.getElementById('game-board');
 
-    cardPairs.forEach((pair, i) => {
-      cards.push({ type: 'concept', content: pair.concept, id: i });
-      cards.push({ type: 'definition', content: pair.definition, id: i });
-    });
+function initGame() {
+  cards = [];
+  flipped = [];
+  locked = false;
+  board().innerHTML = "";
 
-    shuffle(cards).forEach(card => {
-      const el = document.createElement('div');
-      el.className = 'card';
-      el.innerHTML = `
-        <div class="card-inner">
-          <div class="card-front ${card.type}">
-            <i class="fas ${card.type === 'concept' ? 'fa-lightbulb' : 'fa-align-left'} card-icon"></i>
-            <div class="card-label">${card.type === 'concept' ? 'Conceito' : 'Definição'}</div>
-            ${card.type === 'concept' ? `<div class="card-content">${card.content}</div>` : ''}
-          </div>
-          <div class="card-back">
-            <div class="card-label">${card.type === 'concept' ? 'Conceito' : 'Definição'}</div>
-            <div class="card-content">${card.content}</div>
-          </div>
+  cardPairs.forEach((pair, i) => {
+    cards.push({ type: 'concept', content: pair.concept, id: i });
+    cards.push({ type: 'definition', content: pair.definition, id: i });
+  });
+
+  shuffle(cards).forEach(card => {
+    const el = document.createElement('div');
+    el.className = 'card';
+    el.innerHTML = `
+      <div class="card-inner">
+        <div class="card-front ${card.type}">
+          <i class="fas ${card.type === 'concept' ? 'fa-lightbulb' : 'fa-align-left'} card-icon"></i>
+          <div class="card-label">${card.type === 'concept' ? 'Conceito' : 'Definição'}</div>
+          ${card.type === 'concept' ? `<div class="card-content">${card.content}</div>` : ''}
         </div>
-      `;
-      el.onclick = () => handleFlip(el, card);
-      board().appendChild(el);
-    });
-  }
+        <div class="card-back">
+          <div class="card-label">${card.type === 'concept' ? 'Conceito' : 'Definição'}</div>
+          <div class="card-content">${card.content}</div>
+        </div>
+      </div>
+    `;
+    el.onclick = () => handleFlip(el, card);
+    board().appendChild(el);
+  });
+}
 
-  function handleFlip(element, card) {
-    if (locked || flipped.find(f => f.element === element)) return;
+function handleFlip(element, card) {
+  if (locked || flipped.find(f => f.element === element)) return;
 
-    element.classList.add('flipped');
-    flipped.push({ element, id: card.id });
+  element.classList.add('flipped');
+  flipped.push({ element, id: card.id });
 
-    if (flipped.length === 2) {
-      const [a, b] = flipped;
-      if (a.id === b.id) {
-        flipped = [];
-      } else {
-        locked = true;
-        setTimeout(() => {
-          a.element.classList.remove('flipped');
-          b.element.classList.remove('flipped');
-          flipped = [];
-          locked = false;
-        }, 1200);
+  if (flipped.length === 2) {
+    const [a, b] = flipped;
+    if (a.id === b.id) {
+      flipped = [];
+
+      const todasViradas = document.querySelectorAll(".card.flipped").length;
+      if (todasViradas === cards.length) {
+        setTimeout(dispararConfetes, 500);
       }
+
+    } else {
+      locked = true;
+      setTimeout(() => {
+        a.element.classList.remove('flipped');
+        b.element.classList.remove('flipped');
+        flipped = [];
+        locked = false;
+      }, 1200);
     }
   }
+}
 
-  function shuffle(array) {
-    return [...array].sort(() => Math.random() - 0.5);
-  }
+function shuffle(array) {
+  return [...array].sort(() => Math.random() - 0.5);
+}
 
-  document.getElementById('restart-btn').addEventListener('click', initGame);
+document.getElementById('restart-btn').addEventListener('click', initGame);
 </script>
 </body>
 </html>
