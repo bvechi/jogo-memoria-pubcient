@@ -1,14 +1,18 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Jogo da Memória: Publicação Contínua</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { height: 100%; font-family: 'Nunito', sans-serif; background-color: #f8fafc; }
+    html, body {
+      max-width: 1920px;
+      max-height: 1080px;
+      margin: 0 auto;
+      background-color: #f8fafc;
+      font-family: 'Nunito', sans-serif;
+    }
     .hidden { display: none; }
     .full-screen-img {
       width: 100%;
@@ -17,127 +21,194 @@
       position: absolute;
       top: 0;
       left: 0;
+      z-index: 0;
     }
-    .overlay-area {
+    .overlay-button {
       position: absolute;
       cursor: pointer;
+      width: 160px;
+      height: 50px;
+      z-index: 10;
     }
-    .btn-continuar {
-      top: 74%;
-      left: 44%;
-      width: 12%;
-      height: 8%;
+    .btn-continuar { top: 76%; left: 58%; }
+    .btn-comecar { top: 75.5%; left: 48%; }
+    .card {
+      perspective: 1000px;
+      width: 100%;
+      height: 0;
+      padding-bottom: 100%;
+      position: relative;
     }
-    .btn-comecar {
-      top: 74%;
-      left: 44%;
-      width: 12%;
-      height: 8%;
+    .card-inner {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+    }
+    .card.flipped .card-inner {
+      transform: rotateY(180deg);
+    }
+    .card-front, .card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 1rem;
+    }
+    .card-front {
+      color: white;
+    }
+    .card-front.concept {
+      background-color: #244c76;
+    }
+    .card-front.definition {
+      background-color: #7eb1db;
+    }
+    .card-back {
+      background-color: white;
+      transform: rotateY(180deg);
+      color: #333;
+    }
+    .card-label {
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      text-align: center;
+    }
+    .card-content {
+      font-size: 0.9rem;
+      line-height: 1.4;
+      text-align: center;
+    }
+    .card-icon {
+      font-size: 1.5rem;
+      margin-bottom: 0.75rem;
     }
   </style>
 </head>
 <body>
-  <!-- Tela Inicial 1 -->
-  <div id="tela1" class="relative w-full h-screen">
-    <img src="telas/tela-inicial-1.svg" alt="Tela inicial 1" class="full-screen-img">
-    <img src="botoes/button-continuar.svg" alt="Botão continuar" class="overlay-area btn-continuar" onclick="irParaTela2()">
+
+<!-- TELA 1 -->
+<div id="tela1" class="relative w-full h-screen">
+  <img src="telas/tela-inicial-1.svg" alt="Tela inicial 1" class="full-screen-img" />
+  <img src="botoes/button-continuar.svg" alt="Botão continuar" class="overlay-button btn-continuar" onclick="irParaTela2()" />
+</div>
+
+<!-- TELA 2 -->
+<div id="tela2" class="relative w-full h-screen hidden">
+  <img src="telas/tela-inicial-2.svg" alt="Tela inicial 2" class="full-screen-img" />
+  <img src="botoes/button-começar.svg" alt="Botão começar" class="overlay-button btn-comecar" onclick="iniciarJogo()" />
+</div>
+
+<!-- JOGO -->
+<div id="jogo" class="hidden p-4">
+  <div class="max-w-6xl mx-auto">
+    <header class="text-center mb-8">
+      <h1 class="text-4xl font-bold text-blue-800">Jogo da Memória: Publicação Contínua</h1>
+      <p class="text-blue-600 text-lg">Encontre os pares de conceitos e definições</p>
+      <button id="restart-btn" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition">
+        🔄 Reiniciar Jogo
+      </button>
+    </header>
+    <section id="game-board" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"></section>
   </div>
+</div>
 
-  <!-- Tela Inicial 2 -->
-  <div id="tela2" class="relative w-full h-screen hidden">
-    <img src="telas/tela-inicial-2.svg" alt="Tela inicial 2" class="full-screen-img">
-    <img src="botoes/button-começar.svg" alt="Botão começar" class="overlay-area btn-comecar" onclick="iniciarJogo()">
-  </div>
+<script>
+  function irParaTela2() {
+    document.getElementById('tela1').classList.add('hidden');
+    document.getElementById('tela2').classList.remove('hidden');
+  }
 
-  <!-- Jogo -->
-  <div id="jogo" class="hidden p-4">
-    <div class="max-w-6xl mx-auto">
-      <header class="text-center mb-8">
-        <h1 class="text-3xl font-bold text-blue-800">Jogo da Memória: Publicação Contínua</h1>
-        <p class="text-blue-600 text-lg">Encontre os pares de conceitos e definições</p>
-        <button id="restart-btn" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition">
-          🔄 Reiniciar Jogo
-        </button>
-      </header>
-      <section id="game-board" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"></section>
-    </div>
-  </div>
+  function iniciarJogo() {
+    document.getElementById('tela2').classList.add('hidden');
+    document.getElementById('jogo').classList.remove('hidden');
+    initGame();
+  }
 
-  <script>
-    function irParaTela2() {
-      document.getElementById('tela1').classList.add('hidden');
-      document.getElementById('tela2').classList.remove('hidden');
-    }
+  const cardPairs = [
+    { concept: "Publicação Contínua", definition: "Artigos publicados individualmente ao longo do ano." },
+    { concept: "Volume único", definition: "Todos os artigos do ano são reunidos em um só volume." },
+    { concept: "Fascículo", definition: "Estrutura não utilizada em revistas que adotam publicação contínua." },
+    { concept: "Elocation-id", definition: "Código que substitui a paginação tradicional." },
+    { concept: "Data individual", definition: "Cada artigo tem sua própria data de publicação visível." },
+    { concept: "Modelo híbrido", definition: "Mistura fluxo contínuo com fascículos. Pode causar confusão e deve ser evitado." },
+    { concept: "DOI", definition: "Identificador digital único para artigos científicos." },
+    { concept: "OJS", definition: "Sistema aberto de gestão e publicação de periódicos científicos." },
+    { concept: "Indexação", definition: "Inclusão em bases como DOAJ e Crossref." },
+    { concept: "Fluxo editorial", definition: "Caminho do artigo desde a submissão até a publicação final." }
+  ];
 
-    function iniciarJogo() {
-      document.getElementById('tela2').classList.add('hidden');
-      document.getElementById('jogo').classList.remove('hidden');
-      initGame();
-    }
+  let cards = [], flipped = [], locked = false;
+  const board = () => document.getElementById('game-board');
 
-    const cardPairs = [
-      { concept: "Publicação Contínua", definition: "Artigos são publicados individualmente ao longo do ano." },
-      { concept: "Volume único", definition: "Todos os artigos do ano ficam em um único volume." },
-      { concept: "Fascículo", definition: "Estrutura não usada em fluxo contínuo." },
-      { concept: "Elocation-id", definition: "Identificador que substitui a paginação." },
-      { concept: "Data individual", definition: "Cada artigo possui sua própria data de publicação." },
-      { concept: "Modelo híbrido", definition: "Combina fluxo contínuo com fascículos (não recomendado)." },
-      { concept: "DOI", definition: "Identificador digital único para artigos científicos." },
-      { concept: "OJS", definition: "Sistema aberto de editoração de periódicos." },
-      { concept: "Indexação", definition: "Inclusão em bases como DOAJ, Crossref etc." },
-      { concept: "Fluxo editorial", definition: "Etapas desde a submissão até a publicação final." }
-    ];
+  function initGame() {
+    cards = [];
+    flipped = [];
+    locked = false;
+    board().innerHTML = "";
 
-    let cards = [], flipped = [], locked = false;
-    const board = () => document.getElementById('game-board');
+    cardPairs.forEach((pair, i) => {
+      cards.push({ type: 'concept', content: pair.concept, id: i });
+      cards.push({ type: 'definition', content: pair.definition, id: i });
+    });
 
-    function initGame() {
-      cards = [];
-      flipped = [];
-      locked = false;
-      board().innerHTML = "";
+    shuffle(cards).forEach(card => {
+      const el = document.createElement('div');
+      el.className = 'card';
+      el.innerHTML = `
+        <div class="card-inner">
+          <div class="card-front ${card.type}">
+            <i class="fas ${card.type === 'concept' ? 'fa-lightbulb' : 'fa-align-left'} card-icon"></i>
+            <div class="card-label">${card.type === 'concept' ? 'Conceito' : 'Definição'}</div>
+            ${card.type === 'concept' ? `<div class="card-content">${card.content}</div>` : ''}
+          </div>
+          <div class="card-back">
+            <div class="card-label">${card.type === 'concept' ? 'Conceito' : 'Definição'}</div>
+            <div class="card-content">${card.content}</div>
+          </div>
+        </div>
+      `;
+      el.onclick = () => handleFlip(el, card);
+      board().appendChild(el);
+    });
+  }
 
-      cardPairs.forEach((pair, i) => {
-        cards.push({ type: 'concept', content: pair.concept, id: i });
-        cards.push({ type: 'definition', content: pair.definition, id: i });
-      });
+  function handleFlip(element, card) {
+    if (locked || flipped.find(f => f.element === element)) return;
 
-      shuffle(cards).forEach(card => {
-        const el = document.createElement('div');
-        el.className = "bg-white text-center shadow-md rounded-lg p-4 cursor-pointer hover:shadow-xl transition";
-        el.innerText = card.type === 'concept' ? `🧠 ${card.content}` : `📘 ${card.content}`;
-        el.onclick = () => handleFlip(el, card);
-        board().appendChild(el);
-      });
-    }
+    element.classList.add('flipped');
+    flipped.push({ element, id: card.id });
 
-    function handleFlip(element, card) {
-      if (locked || flipped.includes(element)) return;
-
-      element.classList.add("bg-green-100");
-      flipped.push({ element, id: card.id });
-
-      if (flipped.length === 2) {
-        const [a, b] = flipped;
-        if (a.id === b.id) {
+    if (flipped.length === 2) {
+      const [a, b] = flipped;
+      if (a.id === b.id) {
+        flipped = [];
+      } else {
+        locked = true;
+        setTimeout(() => {
+          a.element.classList.remove('flipped');
+          b.element.classList.remove('flipped');
           flipped = [];
-        } else {
-          locked = true;
-          setTimeout(() => {
-            a.element.classList.remove("bg-green-100");
-            b.element.classList.remove("bg-green-100");
-            flipped = [];
-            locked = false;
-          }, 1000);
-        }
+          locked = false;
+        }, 1200);
       }
     }
+  }
 
-    function shuffle(arr) {
-      return arr.sort(() => Math.random() - 0.5);
-    }
+  function shuffle(array) {
+    return [...array].sort(() => Math.random() - 0.5);
+  }
 
-    document.getElementById('restart-btn').addEventListener('click', initGame);
-  </script>
+  document.getElementById('restart-btn').addEventListener('click', initGame);
+</script>
 </body>
 </html>
