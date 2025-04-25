@@ -7,13 +7,13 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     html, body {
-      max-width: 1920px;
-      max-height: 1080px;
-      margin: 0 auto;
+      margin: 0;
+      padding: 0;
       background-color: #f8fafc;
       font-family: 'Nunito', sans-serif;
+      overflow-x: hidden;
     }
-    .hidden { display: none; }
+
     .full-screen-img {
       width: 100%;
       height: 100vh;
@@ -23,6 +23,7 @@
       left: 0;
       z-index: 0;
     }
+
     .overlay-button {
       position: absolute;
       cursor: pointer;
@@ -30,8 +31,10 @@
       height: 50px;
       z-index: 10;
     }
-    .btn-continuar { top: 76%; left: 58%; }
-    .btn-comecar { top: 75.5%; left: 48%; }
+
+    .btn-continuar { top: 86%; left: 18%; }
+    .btn-comecar { top: 76%; left: 7%; }
+
     .card {
       perspective: 1000px;
       width: 100%;
@@ -39,6 +42,7 @@
       padding-bottom: 100%;
       position: relative;
     }
+
     .card-inner {
       position: absolute;
       width: 100%;
@@ -46,9 +50,11 @@
       transition: transform 0.6s;
       transform-style: preserve-3d;
     }
+
     .card.flipped .card-inner {
       transform: rotateY(180deg);
     }
+
     .card-front, .card-back {
       position: absolute;
       width: 100%;
@@ -62,20 +68,25 @@
       text-align: center;
       padding: 1rem;
     }
+
     .card-front {
       color: white;
     }
+
     .card-front.concept {
       background-color: #244c76;
     }
+
     .card-front.definition {
       background-color: #7eb1db;
     }
+
     .card-back {
       background-color: white;
       transform: rotateY(180deg);
       color: #333;
     }
+
     .card-label {
       font-weight: 700;
       margin-bottom: 0.5rem;
@@ -83,33 +94,43 @@
       text-transform: uppercase;
       text-align: center;
     }
+
     .card-content {
       font-size: 0.9rem;
       line-height: 1.4;
       text-align: center;
     }
+
     .card-icon {
       font-size: 1.5rem;
       margin-bottom: 0.75rem;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .escala-ajustavel {
+      transition: transform 0.3s ease;
+      transform-origin: top center;
     }
   </style>
 </head>
 <body>
 
-<!-- TELA 1 -->
-<div id="tela1" class="relative w-full h-screen">
+<!-- TELAS -->
+<div id="tela1" class="relative w-full h-screen escala-ajustavel">
   <img src="telas/tela-inicial-1.svg" alt="Tela inicial 1" class="full-screen-img" />
   <img src="botoes/button-continuar.svg" alt="Botão continuar" class="overlay-button btn-continuar" onclick="irParaTela2()" />
 </div>
 
-<!-- TELA 2 -->
-<div id="tela2" class="relative w-full h-screen hidden">
+<div id="tela2" class="relative w-full h-screen escala-ajustavel hidden">
   <img src="telas/tela-inicial-2.svg" alt="Tela inicial 2" class="full-screen-img" />
   <img src="botoes/button-começar.svg" alt="Botão começar" class="overlay-button btn-comecar" onclick="iniciarJogo()" />
 </div>
 
 <!-- JOGO -->
-<div id="jogo" class="hidden p-4">
+<div id="jogo" class="hidden p-4 escala-ajustavel">
   <div class="max-w-6xl mx-auto">
     <header class="text-center mb-8">
       <h1 class="text-4xl font-bold text-blue-800">Jogo da Memória: Publicação Contínua</h1>
@@ -118,7 +139,8 @@
         🔄 Reiniciar Jogo
       </button>
     </header>
-    <section id="game-board" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"></section>
+    <section id="game-board" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 max-w-[1100px] mx-auto">
+    </section>
   </div>
 </div>
 
@@ -209,6 +231,20 @@
   }
 
   document.getElementById('restart-btn').addEventListener('click', initGame);
+
+  // ESCALA AUTOMÁTICA
+  function ajustarEscala() {
+    const larguraPadrao = 1440;
+    const larguraAtual = window.innerWidth;
+    const proporcao = larguraAtual / larguraPadrao;
+
+    document.querySelectorAll('.escala-ajustavel').forEach(el => {
+      el.style.transform = `scale(${proporcao})`;
+    });
+  }
+
+  window.addEventListener('load', ajustarEscala);
+  window.addEventListener('resize', ajustarEscala);
 </script>
 </body>
 </html>
