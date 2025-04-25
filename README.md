@@ -36,6 +36,6 @@ Ao iniciar o jogo:
 ---
 ## Autoria
 Desenvolvido por:  
-**Bernardo Dionízio Vechi** – [bernardovechi@ibict.br](mailto:bernardovechi@ibict.br)  
+**Bernardo Dionízio Vechi**
 📘 Curso Aprendendo OJS
 
